@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Attention Monitoring Detector</title>
+    <link rel="stylesheet" href="style.css">
+
+    <!-- TensorFlow.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.10.0/dist/tf.min.js"></script>
+
+    <!-- Teachable Machine Image -->
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"></script>
+</head>
+<body>
+
+<div class="container">
+    <h1>Attention Monitoring Detector</h1>
+
+    <div id="webcam-container">
+        <video autoplay playsinline muted id="webcam" width="224" height="224"></video>
+    </div>
+
+    <div class="status-box">
+        <p id="status">Idle</p>
+        <p id="confidence"></p>
+    </div>
+
+    <div class="meter">
+        <div class="bar">
+            <div id="scoreBar"></div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button onclick="init()">Start Detection</button>
+        <button onclick="stop()">Stop Detection</button>
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
