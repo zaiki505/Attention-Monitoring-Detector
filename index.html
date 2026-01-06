@@ -1,42 +1,67 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <title>Attention Monitoring Detector</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css" />
 
     <!-- TensorFlow.js -->
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.10.0/dist/tf.min.js"></script>
 
     <!-- Teachable Machine Image -->
     <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"></script>
-</head>
-<body>
+  </head>
 
-<div class="container">
+  <body>
     <h1>Attention Monitoring Detector</h1>
 
-    <div id="webcam-container">
-        <video autoplay playsinline muted id="webcam" width="224" height="224"></video>
-    </div>
-
-    <div class="status-box">
-        <p id="status">Idle</p>
-        <p id="confidence"></p>
-    </div>
-
-    <div class="meter">
-        <div class="bar">
-            <div id="scoreBar"></div>
+    <div class="dashboard">
+      <div class="left-panel">
+        <p id="disclaimer">Face must always be seen and well lit</p>
+        
+        <div id="webcam-container" class="webcam-frame">
+          <div class="placeholder-text">Camera Inactive</div>
         </div>
+        
+        <div class="controls">
+            <button onclick="init()">Start Detection</button>
+            <button onclick="stop()">Stop Detection</button>
+        </div>
+
+        <div id="error-overlay" class="error hidden">
+          <h3>Camera Access Denied</h3>
+          <p>Please allow camera permission and refresh the page.</p>
+        </div>
+      </div>
+
+      <div class="right-panel">
+        <div class="card" id="status-card">
+          <h3>Status</h3>
+          <p id="status" class="status idle">Idle</p>
+          <p id="confidence"></p>
+        </div>
+
+        <div class="card" id="score-card">
+          <h3>Attention Score</h3>
+          <div class="progress">
+            <div id="score-bar"></div>
+          </div>
+          <p id="score-text">100%</p>
+        </div>
+
+        </div>
+      </div>
     </div>
 
-    <div class="controls">
-        <button onclick="init()">Start Detection</button>
-        <button onclick="stop()">Stop Detection</button>
+    <div class="log-card">
+      <h3>Activity Log</h3>
+      <ul id="log-list"></ul>
     </div>
-</div>
 
-<script src="script.js"></script>
-</body>
+    <audio id="alert-sound">
+      <source src="https://actions.google.com/sounds/v1/emergency/beeper_emergency_call.ogg" type="audio/ogg">
+    </audio>  
+
+    <script src="script.js"></script>
+  </body>
 </html>
