@@ -6,7 +6,14 @@ let lastState = "";
 let distractedSeconds = 0;
 let alertTriggered = false;
 let criticalAlertTriggered = false;
+let sessionStartTime = null;
+let focusedTime = 0;
+let distractedTime = 0;
+let totalScore = 0;
+let frameCount = 0;
+let alertCount = 0;
 
+const summaryList = document.getElementById("summary-list");
 const statusText = document.getElementById("status");
 const confidenceText = document.getElementById("confidence");
 const webcamContainer = document.getElementById("webcam-container");
@@ -35,6 +42,22 @@ async function init() {
         webcamContainer.innerHTML = "";
         webcamContainer.appendChild(webcam.canvas);
         webcamContainer.classList.add("active");
+
+        sessionStartTime = Date.now();
+        focusedTime = 0;
+        distractedTime = 0;
+        totalScore = 0;
+        frameCount = 0;
+        alertCount = 0;
+        summaryList.innerHTML = `
+            <li>Duration: -</li>
+            <li>Focused Time: -</li>
+            <li>Distracted Time: -</li>
+            <li>Average Attention Score: -</li>
+            <li>Alerts Triggered: -</li>
+            <li>Focus Percentage: -</li>
+        `;
+        
         logEvent("System Started");
         loop();
     } catch (err) {
@@ -68,6 +91,16 @@ async function predict() {
         document.body.classList.add('ring-red-flash');
     }
 
+    // Session statistics tracking
+    frameCount++;
+    totalScore += score;
+
+    if (best.className === "LookingAtScreen") {
+        focusedTime += 1 / 60;
+    } else {
+        distractedTime += 1 / 60;
+    }
+
     updateUI(best);
     updateScore(best.className);
     handleScoreAlert();
@@ -98,12 +131,14 @@ function updateScore(state) {
 function handleScoreAlert(state) {
     if (score <= 50 && !alertTriggered) {
         alertSound.play();
+        alertCount++;
         logEvent("🚨 Alert triggered: Attention score dropped to " + score.toFixed(0) + "%");
         alertTriggered = true;
     }
 
     else if (score <= 10) {
         alertSound.play();
+        alertCount++;
         if (score <= 10 && !criticalAlertTriggered) {
             logEvent("⚠️ Critical Alert: Attention score dropped below " + score.toFixed(0) + "%");
         }
@@ -132,6 +167,25 @@ function logEvent(message) {
     logList.prepend(item);
 }
 
+function generateSessionSummary() {
+    const duration = (Date.now() - sessionStartTime) / 1000;
+    const avgScore = frameCount ? totalScore / frameCount : 0;
+    const focusPercent = duration
+        ? (focusedTime / duration) * 100
+        : 0;
+
+    summaryList.innerHTML = `
+        <li>Duration: ${duration.toFixed(1)} seconds</li>
+        <li>Focused Time: ${focusedTime.toFixed(1)} seconds</li>
+        <li>Distracted Time: ${distractedTime.toFixed(1)} seconds</li>
+        <li>Average Attention Score: ${avgScore.toFixed(1)}%</li>
+        <li>Alerts Triggered: ${alertCount}</li>
+        <li>Focus Percentage: ${focusPercent.toFixed(1)}%</li>
+    `;
+
+    logEvent("Session summary generated");
+}
+
 function stop() {
     if (webcam) 
     {
@@ -141,6 +195,9 @@ function stop() {
         webcamContainer.classList.remove("active");
         document.body.classList.remove('ring-green', 'ring-yellow', 'ring-red-flash');
     }
+
+    // Update session summary
+    generateSessionSummary();
 
     errorOverlay.classList.add("hidden");
     logEvent("System Stopped");

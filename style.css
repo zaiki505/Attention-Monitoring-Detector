@@ -257,6 +257,14 @@ button:active {
   padding-left: 20px;
 }
 
+.summary-card {
+  max-width: 1000px;
+  margin: 20px auto;
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+}
+
 .error {
   position: absolute;
   inset: 0;
